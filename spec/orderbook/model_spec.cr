@@ -1,25 +1,24 @@
 require "../spec_helper"
 
 describe Orderbook::Model do
-  describe "#midprice" do
-    it "returns the expected midprice" do
-      bids = {
-        BigDecimal.new(0.25) => BigDecimal.new(0.1),
-        BigDecimal.new(2) => BigDecimal.new(0.1),
-      }
+  it "returns the expected midprice and spread" do
+    bids = {
+      BigDecimal.new(0.25) => BigDecimal.new(0.1),
+      BigDecimal.new(2) => BigDecimal.new(0.1),
+    }
 
-      asks = {
-        BigDecimal.new(3) => BigDecimal.new(0.1),
-        BigDecimal.new(6) => BigDecimal.new(0.1),
-      }
+    asks = {
+      BigDecimal.new(3) => BigDecimal.new(0.1),
+      BigDecimal.new(6) => BigDecimal.new(0.1),
+    }
 
-      orderbook = Orderbook::Model.new(
-        bids: bids,
-        asks: asks
-      )
+    orderbook = Orderbook::Model.new(
+      bids: bids,
+      asks: asks
+    )
 
-      orderbook.midprice.should eq BigDecimal.new(2.5)
-    end
+    orderbook.midprice.should eq BigDecimal.new(2.5)
+    orderbook.spread.should eq BigDecimal.new(1)
   end
 
 

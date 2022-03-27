@@ -16,6 +16,10 @@ module Orderbook
       end
     end
 
+    def spread
+      best_ask - best_bid
+    end
+
     def midprice
       (best_ask + best_bid) / 2
     end
