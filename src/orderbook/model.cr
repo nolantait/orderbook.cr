@@ -29,14 +29,10 @@ module Orderbook
     end
 
     private def check_orders(trade : Tick)
-      if trade.is_bid
-        filled = sell_orders.select do |sell|
-          sell.price <= trade.price
-        end
-      else
-        filled = buy_orders.select do |buy|
-          buy.price >= trade.price
-        end
+      orders = trade.is_bid ? sell_orders : buy_orders
+
+      filled = orders.select do |sell|
+        sell.price <= trade.price
       end
 
       @orders = @orders - filled
