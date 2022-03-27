@@ -15,7 +15,7 @@ for all ticks and orders in an effort to keep the API somewhat uniform.
    ```yaml
    dependencies:
      orderbook:
-       github: your-github-user/orderbook
+       github: nolantait/orderbook.cr
    ```
 
 2. Run `shards install`
