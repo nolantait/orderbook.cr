@@ -1,14 +1,11 @@
 module Orderbook
-  struct Tick
-    getter timestamp, is_trade, is_bid, price, quantity
+  class Tick < EventHandler::Event
+    getter timestamp : Timestamp
+    getter is_trade : Bool
+    getter is_bid : Bool
+    getter price : BigDecimal
+    getter quantity : BigDecimal
 
-    def initialize(
-      @timestamp : Timestamp,
-      @is_trade : Bool,
-      @is_bid : Bool,
-      @price : Price,
-      @quantity : Volume
-    )
-    end
+    def initialize(@timestamp, @is_trade, @is_bid, @price, @quantity); end
   end
 end

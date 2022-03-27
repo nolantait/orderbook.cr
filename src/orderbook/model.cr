@@ -1,5 +1,8 @@
 module Orderbook
+  EventHandler.event LimitOrderFilled, order : LimitOrder
+
   class Model
+    include EventHandler
     getter bids, asks
 
     def initialize(
@@ -7,6 +10,9 @@ module Orderbook
       @asks : Orders = {} of BigDecimal => BigDecimal,
       @orders : Array(LimitOrder) = [] of LimitOrder
     )
+      on Tick do |event|
+        apply(event)
+      end
     end
 
     def apply(tick : Tick)
@@ -36,6 +42,7 @@ module Orderbook
       @orders = @orders - filled
 
       filled.each do |order|
+        emit LimitOrderFilled.new(order: order)
         order.fill
       end
     end

@@ -1,12 +1,17 @@
 module Orderbook
   class LimitOrder
-    getter status, is_bid, amount, price
+    getter id : String | UUID
+    getter status : String
+    getter is_bid : Bool
+    getter quantity : BigDecimal
+    getter price : BigDecimal
 
-    def initialize(
-      @is_bid : Bool,
-      @amount : BigDecimal,
-      @price : BigDecimal
-    )
+    def initialize(@id, @is_bid, @quantity, @price)
+      @status = "processing"
+    end
+
+    def initialize(@is_bid, @quantity, @price)
+      @id = UUID.random
       @status = "processing"
     end
 

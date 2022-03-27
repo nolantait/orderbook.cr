@@ -4,9 +4,11 @@ describe Orderbook::Model do
   it "applies trades" do
     order_book = Orderbook::Model.new
 
+    called = false
+
     limit_order = Orderbook::LimitOrder.new(
       is_bid: false,
-      amount: BigDecimal.new(1),
+      quantity: BigDecimal.new(1),
       price: BigDecimal.new(0.1)
     )
 
@@ -26,12 +28,19 @@ describe Orderbook::Model do
       quantity: BigDecimal.new(1)
     )
 
+    order_book.on Orderbook::LimitOrderFilled do |event|
+      called = true
+    end
+
     limit_order.status.should eq "processing"
-    order_book.add_order(limit_order)
+    order_book.add_order limit_order
+
     limit_order.status.should eq "placed"
-    order_book.apply(buy)
+    order_book.emit buy
     limit_order.status.should eq "filled"
-    order_book.apply(sell)
+    called.should eq true
+
+    order_book.emit sell
 
     order_book.bids.should eq({} of BigDecimal => BigDecimal)
     order_book.asks.should eq({} of BigDecimal => BigDecimal)
@@ -55,8 +64,8 @@ describe Orderbook::Model do
       quantity: BigDecimal.new("2")
     )
 
-    order_book.apply(bid)
-    order_book.apply(ask)
+    order_book.emit bid
+    order_book.emit ask
 
     order_book.bids.should eq({ BigDecimal.new("0.1") => BigDecimal.new("1") })
     order_book.asks.should eq({ BigDecimal.new("0.11") => BigDecimal.new("2") })
@@ -69,7 +78,7 @@ describe Orderbook::Model do
       is_bid: true
     )
 
-    order_book.apply(cancel)
+    order_book.emit cancel
 
     order_book.bids.should eq({} of BigDecimal => BigDecimal)
   end
