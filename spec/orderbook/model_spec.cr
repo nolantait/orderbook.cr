@@ -1,6 +1,28 @@
 require "../spec_helper"
 
 describe Orderbook::Model do
+  describe "#midprice" do
+    it "returns the expected midprice" do
+      bids = {
+        BigDecimal.new(0.25) => BigDecimal.new(0.1),
+        BigDecimal.new(2) => BigDecimal.new(0.1),
+      }
+
+      asks = {
+        BigDecimal.new(3) => BigDecimal.new(0.1),
+        BigDecimal.new(6) => BigDecimal.new(0.1),
+      }
+
+      orderbook = Orderbook::Model.new(
+        bids: bids,
+        asks: asks
+      )
+
+      orderbook.midprice.should eq BigDecimal.new(2.5)
+    end
+  end
+
+
   it "applies trades" do
     order_book = Orderbook::Model.new
 
@@ -42,8 +64,8 @@ describe Orderbook::Model do
 
     order_book.emit sell
 
-    order_book.bids.should eq({} of BigDecimal => BigDecimal)
-    order_book.asks.should eq({} of BigDecimal => BigDecimal)
+    order_book.bids.should eq([] of {BigDecimal, BigDecimal})
+    order_book.asks.should eq([] of {BigDecimal, BigDecimal})
   end
 
   it "applies limit orders" do
@@ -67,8 +89,12 @@ describe Orderbook::Model do
     order_book.emit bid
     order_book.emit ask
 
-    order_book.bids.should eq({ BigDecimal.new("0.1") => BigDecimal.new("1") })
-    order_book.asks.should eq({ BigDecimal.new("0.11") => BigDecimal.new("2") })
+    order_book.bids.should eq([
+      { BigDecimal.new("0.1"), BigDecimal.new("1") }
+    ])
+    order_book.asks.should eq([
+      { BigDecimal.new("0.11"), BigDecimal.new("2") }
+    ])
 
     cancel = Orderbook::Tick.new(
       timestamp: 3,
@@ -80,6 +106,6 @@ describe Orderbook::Model do
 
     order_book.emit cancel
 
-    order_book.bids.should eq({} of BigDecimal => BigDecimal)
+    order_book.bids.should eq([] of {BigDecimal, BigDecimal})
   end
 end

@@ -3,15 +3,40 @@ module Orderbook
 
   class Model
     include EventHandler
-    getter bids, asks
+
+    getter orders : Array(LimitOrder)
 
     def initialize(
       @bids : Orders = {} of BigDecimal => BigDecimal,
       @asks : Orders = {} of BigDecimal => BigDecimal,
-      @orders : Array(LimitOrder) = [] of LimitOrder
+      @orders = [] of LimitOrder
     )
       on Tick do |event|
         apply(event)
+      end
+    end
+
+    def midprice
+      (best_ask + best_bid) / 2
+    end
+
+    def best_ask
+      asks[0][0]
+    end
+
+    def best_bid
+      bids[1][0]
+    end
+
+    def asks
+      @asks.each.to_a.sort do |a, b|
+        a.first <=> b.first
+      end
+    end
+
+    def bids
+      @bids.each.to_a.sort do |a, b|
+        a.first <=> b.first
       end
     end
 
