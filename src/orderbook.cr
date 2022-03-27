@@ -1,6 +1,7 @@
 require "big"
 
 require "./orderbook/tick"
+require "./orderbook/limit_order"
 require "./orderbook/model"
 
 module Orderbook
