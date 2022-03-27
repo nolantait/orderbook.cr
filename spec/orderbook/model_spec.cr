@@ -19,6 +19,7 @@ describe Orderbook::Model do
 
     orderbook.midprice.should eq BigDecimal.new(2.5)
     orderbook.spread.should eq BigDecimal.new(1)
+    orderbook.imbalance.should eq BigDecimal.new(0.5)
   end
 
 

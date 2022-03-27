@@ -17,19 +17,31 @@ module Orderbook
     end
 
     def spread
-      best_ask - best_bid
+      best_ask_price - best_bid_price
     end
 
     def midprice
-      (best_ask + best_bid) / 2
+      (best_ask_price + best_bid_price) / 2
+    end
+
+    def imbalance
+      best_bid[1] / (best_bid[1] + best_ask[1])
+    end
+
+    def best_ask_price
+      best_ask[0]
+    end
+
+    def best_bid_price
+      best_bid[0]
     end
 
     def best_ask
-      asks[0][0]
+      asks.first
     end
 
     def best_bid
-      bids[1][0]
+      bids.last
     end
 
     def asks
