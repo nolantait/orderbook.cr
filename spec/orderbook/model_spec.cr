@@ -8,7 +8,7 @@ describe Orderbook::Model do
     }
 
     asks = {
-      BigDecimal.new(3) => BigDecimal.new(0.1),
+      BigDecimal.new(3) => BigDecimal.new(0.3),
       BigDecimal.new(6) => BigDecimal.new(0.1),
     }
 
@@ -19,7 +19,8 @@ describe Orderbook::Model do
 
     orderbook.midprice.should eq BigDecimal.new(2.5)
     orderbook.spread.should eq BigDecimal.new(1)
-    orderbook.imbalance.should eq BigDecimal.new(0.5)
+    orderbook.imbalance.should eq BigDecimal.new(0.25)
+    orderbook.microprice.should eq BigDecimal.new(2.25)
   end
 
 

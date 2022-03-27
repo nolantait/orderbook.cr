@@ -28,6 +28,10 @@ module Orderbook
       best_bid[1] / (best_bid[1] + best_ask[1])
     end
 
+    def microprice
+      (imbalance * best_ask_price) + ((1 - imbalance) * best_bid_price)
+    end
+
     def best_ask_price
       best_ask[0]
     end
