@@ -1,5 +1,7 @@
 # Orderbook
 
+[![GitHub release](https://img.shields.io/github/release/nolantait/orderbook.cr.svg)](https://github.com/nolantait/orderbook.cr/releases)
+
 An extensible limit order book model written in Crystal.
 
 Designed to be used in live trading and backtesting market making strategies.
