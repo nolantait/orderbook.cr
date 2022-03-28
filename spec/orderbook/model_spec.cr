@@ -23,6 +23,22 @@ describe Orderbook::Model do
     orderbook.microprice.should eq BigDecimal.new(2.25)
   end
 
+  it "cancels limit orders" do
+    orderbook = Orderbook::Model.new
+
+    order = Orderbook::LimitOrder.new(
+      is_bid: true,
+      quantity: BigDecimal.new(1),
+      price: BigDecimal.new(0.1)
+    )
+
+    orderbook.add_order order
+    orderbook.cancel_order order
+
+    orderbook.orders.should eq [] of Orderbook::LimitOrder
+    order.status.should eq :cancelled
+  end
+
 
   it "applies trades" do
     order_book = Orderbook::Model.new
@@ -55,12 +71,12 @@ describe Orderbook::Model do
       called = true
     end
 
-    limit_order.status.should eq "processing"
+    limit_order.status.should eq :processing
     order_book.add_order limit_order
 
-    limit_order.status.should eq "placed"
+    limit_order.status.should eq :placed
     order_book.emit buy
-    limit_order.status.should eq "filled"
+    limit_order.status.should eq :filled
     called.should eq true
 
     order_book.emit sell

@@ -68,6 +68,11 @@ module Orderbook
       end
     end
 
+    def cancel_order(order : LimitOrder)
+      @orders = @orders - [order]
+      order.cancel
+    end
+
     def add_order(order : LimitOrder)
       @orders.push order
       order.place
