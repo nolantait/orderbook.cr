@@ -29,7 +29,10 @@ module Orderbook
     end
 
     def microprice
-      (imbalance * best_ask_price) + ((1 - imbalance) * best_bid_price)
+      weighted_ask = imbalance * best_ask_price
+      weighted_bid = (1-imbalance) * best_bid_price
+
+      weighted_ask + weighted_bid
     end
 
     def best_ask_price
