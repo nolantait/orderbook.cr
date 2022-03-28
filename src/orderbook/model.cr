@@ -1,5 +1,7 @@
 module Orderbook
   EventHandler.event LimitOrderFilled, order : LimitOrder
+  EventHandler.event LimitOrderCancelled, order : LimitOrder
+  EventHandler.event LimitOrderPlaced, order : LimitOrder
 
   class Model
     include EventHandler
@@ -74,11 +76,18 @@ module Orderbook
     def cancel_order(order : LimitOrder)
       @orders = @orders - [order]
       order.cancel
+      emit LimitOrderCancelled.new(order: order)
     end
 
     def add_order(order : LimitOrder)
       @orders.push order
       order.place
+      emit LimitOrderPlaced.new(order: order)
+    end
+
+    private def fill_order(order : LimitOrder)
+      order.fill
+      emit LimitOrderFilled.new(order: order)
     end
 
     private def check_orders(trade : Tick)
@@ -91,8 +100,7 @@ module Orderbook
       @orders = @orders - filled
 
       filled.each do |order|
-        emit LimitOrderFilled.new(order: order)
-        order.fill
+        fill_order order
       end
     end
 
