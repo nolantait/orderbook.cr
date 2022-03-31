@@ -4,7 +4,8 @@ require "event_handler"
 
 require "./orderbook/tick"
 require "./orderbook/limit_order"
-require "./orderbook/model"
+require "./orderbook/simple"
+require "./orderbook/partial"
 
 module Orderbook
   VERSION = "0.1.0"
@@ -13,11 +14,7 @@ module Orderbook
   alias Orders = Hash(BigDecimal, BigDecimal)
   alias Timestamp = Int32
 
-  def self.run(&block : ->(OrderBook::Model))
-    block.call(Model.new)
-  end
-
-  def self.build
-    Model.new
-  end
+  EventHandler.event LimitOrderFilled, order : LimitOrder
+  EventHandler.event LimitOrderCancelled, order : LimitOrder
+  EventHandler.event LimitOrderPlaced, order : LimitOrder
 end

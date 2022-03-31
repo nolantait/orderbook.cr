@@ -1,16 +1,26 @@
 module Orderbook
-  EventHandler.event LimitOrderFilled, order : LimitOrder
-  EventHandler.event LimitOrderCancelled, order : LimitOrder
-  EventHandler.event LimitOrderPlaced, order : LimitOrder
+  struct Offer
+    getter price : BigDecimal
+    getter quantity : BigDecimal
 
-  class Model
+    def initialize(@price : BigDecimal, @quantity : BigDecimal); end
+
+    def initialize(price : Int64, quantity : Int64)
+      @price = BigDecimal.new(price)
+      @quantity = BigDecimal.new(quantity)
+    end
+  end
+
+  class Simple
     include EventHandler
 
+    getter best_bid : Offer
+    getter best_ask : Offer
     getter orders : Array(LimitOrder)
 
     def initialize(
-      @bids : Orders = {} of BigDecimal => BigDecimal,
-      @asks : Orders = {} of BigDecimal => BigDecimal,
+      @best_bid = Offer.new(0, 0),
+      @best_ask = Offer.new(0, 0),
       @orders = [] of LimitOrder
     )
       on Tick do |event|
@@ -19,50 +29,22 @@ module Orderbook
     end
 
     def spread
-      best_ask_price - best_bid_price
+      @best_bid.price - @best_ask.price
     end
 
     def midprice
-      (best_ask_price + best_bid_price) / 2
+      (@best_ask.price + @best_bid.price) / 2
     end
 
     def imbalance
-      best_bid[1] / (best_bid[1] + best_ask[1])
+      @best_bid.quantity / (@best_bid.quantity + @best_ask.quantity)
     end
 
     def microprice
-      weighted_ask = imbalance * best_ask_price
-      weighted_bid = (1-imbalance) * best_bid_price
+      weighted_ask = imbalance * @best_ask.price
+      weighted_bid = (1-imbalance) * @best_bid.price
 
       weighted_ask + weighted_bid
-    end
-
-    def best_ask_price
-      best_ask[0]
-    end
-
-    def best_bid_price
-      best_bid[0]
-    end
-
-    def best_ask
-      asks.first
-    end
-
-    def best_bid
-      bids.last
-    end
-
-    def asks
-      @asks.each.to_a.sort do |a, b|
-        a.first <=> b.first
-      end
-    end
-
-    def bids
-      @bids.each.to_a.sort do |a, b|
-        a.first <=> b.first
-      end
     end
 
     def apply(tick : Tick)
@@ -117,19 +99,11 @@ module Orderbook
     end
 
     private def handle_bid(tick : Tick)
-      if tick.quantity == 0
-        @bids.delete(tick.price)
-      else
-        @bids[tick.price] = tick.quantity
-      end
+      @best_bid = Offer.new(price: tick.price, quantity: tick.quantity)
     end
 
     private def handle_ask(tick : Tick)
-      if tick.quantity == 0
-        @asks.delete(tick.price)
-      else
-        @asks[tick.price] = tick.quantity
-      end
+      @best_ask = Offer.new(price: tick.price, quantity: tick.quantity)
     end
   end
 end

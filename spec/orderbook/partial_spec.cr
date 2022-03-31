@@ -1,6 +1,6 @@
 require "../spec_helper"
 
-describe Orderbook::Model do
+describe Orderbook::Partial do
   it "returns the expected midprice and spread" do
     bids = {
       BigDecimal.new(0.25) => BigDecimal.new(0.1),
@@ -12,7 +12,7 @@ describe Orderbook::Model do
       BigDecimal.new(6) => BigDecimal.new(0.1),
     }
 
-    orderbook = Orderbook::Model.new(
+    orderbook = Orderbook::Partial.new(
       bids: bids,
       asks: asks
     )
@@ -24,7 +24,7 @@ describe Orderbook::Model do
   end
 
   it "cancels limit orders" do
-    orderbook = Orderbook::Model.new
+    orderbook = Orderbook::Partial.new
 
     order = Orderbook::LimitOrder.new(
       is_bid: true,
@@ -41,7 +41,7 @@ describe Orderbook::Model do
 
 
   it "applies trades" do
-    order_book = Orderbook::Model.new
+    order_book = Orderbook::Partial.new
 
     called = false
 
@@ -86,7 +86,7 @@ describe Orderbook::Model do
   end
 
   it "applies limit orders" do
-    order_book = Orderbook::Model.new
+    order_book = Orderbook::Partial.new
 
     bid = Orderbook::Tick.new(
       timestamp: 1,

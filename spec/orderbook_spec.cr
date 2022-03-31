@@ -2,7 +2,7 @@ require "./spec_helper"
 
 describe Orderbook do
   it "runs" do
-    book = Orderbook.build
+    book = Orderbook::Partial.new
     result = false
 
     book.on Orderbook::LimitOrderFilled do |order|
