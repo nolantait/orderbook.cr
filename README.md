@@ -28,39 +28,48 @@ for all ticks and orders in an effort to keep the API somewhat uniform.
 require "orderbook"
 require "big"
 
-Orderbook.run do |book|
-  book.on Orderbook::LimitOrderFilled do |order|
-    puts "ORDER FILLED"
-  end
+book = Orderbook::Partial.new
 
-  sell_order = Orderbook::LimitOrder.new(
-    id: "1",
-    is_bid: false,
-    quantity: BigDecimal.new(0.5),
-    price: BigDecimal.new(0.1)
-  )
-
-  tick = Tick.new(
-    timestamp: 123456,
-    is_trade: true,
-    is_bid: true,
-    price: BigDecimal.new(0.1),
-    quantity: BigDecimal.new(1)
-  )
-
-  book.add_order sell_order
-  book.emit tick
+book.on Orderbook::LimitOrderFilled do |order|
+  puts "ORDER FILLED"
 end
+
+sell_order = Orderbook::LimitOrder.new(
+  id: "1",
+  is_bid: false,
+  quantity: BigDecimal.new(0.5),
+  price: BigDecimal.new(0.1)
+)
+
+tick = Tick.new(
+  timestamp: 123456,
+  is_trade: true,
+  is_bid: true,
+  price: BigDecimal.new(0.1),
+  quantity: BigDecimal.new(1)
+)
+
+book.add_order sell_order
+book.emit tick
 ```
 
-OR you could initialize the book yourself without a block:
+OR you could initialize a simple book with just the best bid/ask:
 
 ```crystal
-book = Orderbook.build
-# Do stuff from above here
+book = Orderbook::Simple.new
+
+tick = Tick.new(
+  timestamp: 123456,
+  is_trade: false,
+  is_bid: true,
+  price: BigDecimal.new(0.1),
+  quantity: BigDecimal.new(1)
+)
+
+book.emit tick
 ```
 
-Running either would print "ORDER FILLED"
+The above would set the `book.best_bid` to equal the new tick
 
 ## Development
 
